@@ -77,7 +77,7 @@ module Mongoid
       def filter_conditions
         return unless (query = params[:sSearch]).present?
 
-        {"$or" => klass.data_table_search_fields.map { |field| { field => /#{query}/i} } }
+        {"$or" => klass.data_table_searchable_fields.map { |field| { field => /#{query}/i} } }
       end
 
       def filter_field_conditions
