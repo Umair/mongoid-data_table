@@ -2,14 +2,13 @@ require "spec_helper"
 
 describe DataTable do
 
-  include DataTable::ClassMethods
+  include DataTable::Base::ClassMethods
 
   context "on being included" do
     it "should extend ClassMethods" do
       klass = Class.new
-      mock(klass).send(:extend, DataTable::ClassMethods)
-      mock(klass).send(:extend, DataTable::Mongoid::ClassMethods)
-      klass.instance_eval %{include DataTable}
+      klass.instance_eval %{include DataTable::Base}
+      (class << klass; self.included_modules; end).should include(DataTable::Base::ClassMethods)
     end
   end
 

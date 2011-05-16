@@ -37,7 +37,7 @@ describe DataTable do
   context "#_discover_joins" do
 
      it "should return the joins on the fields" do
-       _discover_joins(%w(foo.bar foz.ber baz)).should == [:foo, :foz]
+       _discover_joins(%w(foo.bar foz.ber baz)).to_a.should == [:foo, :foz]
      end
 
   end
