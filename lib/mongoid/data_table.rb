@@ -35,10 +35,10 @@ module Mongoid
         self.data_table_options[:sortable] ||= self.data_table_fields
       end
 
-      def to_data_table(controller, options = {}, explicit_block = nil, &implicit_block) #fields, search_fields=nil, explicit_block=nil, &implicit_block)
+      def to_data_table(controller, options = {}, explicit_block = nil, &implicit_block)
         block = (explicit_block or implicit_block)
 
-        ::Mongoid::DataTable::Proxy.new(self, controller, options, &block)
+        ::Mongoid::DataTable::Proxy.new(self, controller, options, block)
       end
 
     end

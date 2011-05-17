@@ -4,7 +4,7 @@ module Mongoid
 
       attr_reader :klass, :controller, :options, :block, :params, :criteria, :unscoped, :fields, :aliases
 
-      def initialize(klass, controller, options = {}, &block)
+      def initialize(klass, controller, options = {}, block = nil)
         @klass      = klass
         @controller = controller
         @options    = klass.data_table_options.merge(options)

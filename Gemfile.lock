@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongoid-data_table (1.0.0)
+    mongoid-data_table (1.0.1)
       rails (~> 3.0.0)
       will_paginate (~> 3.0.pre2)
 
