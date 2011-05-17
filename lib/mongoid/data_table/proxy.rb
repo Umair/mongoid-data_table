@@ -2,13 +2,13 @@ module Mongoid
   module DataTable
     class Proxy < ::Mongoid::Relations::Proxy
 
-      attr_reader :klass, :controller, :options, :block, :params, :criteria, :unscoped, :fields, :aliases
+      attr_reader :klass, :controller, :options, :extension, :params, :criteria, :unscoped, :fields, :aliases
 
       def initialize(klass, controller, options = {}, block = nil)
         @klass      = klass
         @controller = controller
         @options    = klass.data_table_options.merge(options)
-        @block      = block
+        @extension  = block
 
         @params   = options[:params]   || controller.params.dup
         @criteria = options[:criteria] || klass.scoped
@@ -44,7 +44,7 @@ module Mongoid
       end
 
       def to_hash(&inline_block)
-        inline_block = block || default_data_table_block unless block_given?
+        inline_block = extension || default_data_table_block unless block_given?
         {
           :sEcho => params[:sEcho].to_i,
           :iTotalRecords => unscoped.count,
