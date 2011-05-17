@@ -21,7 +21,8 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "bson_ext", "~>1.3.0"
   s.add_development_dependency "mongoid", "~>2.0.1"
-  s.add_development_dependency "rspec", "~>2.5.0"
+  s.add_development_dependency "mocha", "~>0.9.12"
+  s.add_development_dependency "rspec", "~>2.6.0"
   s.add_development_dependency "shoulda", "~>2.11.3"
-  s.add_development_dependency "rr", "~>1.0.2"
+  s.add_development_dependency "watchr", "~>0.7"
 end

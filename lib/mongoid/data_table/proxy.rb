@@ -2,7 +2,7 @@ module Mongoid
   module DataTable
     class Proxy < ::Mongoid::Relations::Proxy
 
-      attr_reader :klass, :controller, :options, :block, :params, :criteria, :unscoped, :fields
+      attr_reader :klass, :controller, :options, :block, :params, :criteria, :unscoped, :fields, :aliases
 
       def initialize(klass, controller, options = {}, &block)
         @klass      = klass
@@ -14,6 +14,7 @@ module Mongoid
         @criteria = options[:criteria] || klass.scoped
         @unscoped = options[:unscoped] || klass.unscoped
         @fields   = options[:fields]   || klass.data_table_fields
+        @aliases  = options[:aliases]  || @fields
       end
 
       def collection(force = false)
@@ -83,7 +84,22 @@ module Mongoid
       def filter_field_conditions
         order_params = params.select { |k,v| k =~ /sSearch_\d+/ }.inject({}) do |h,(k,v)|
           i = /sSearch_(\d+)/.match(k)[1]
-          h[fields[i.to_i]] = Regexp.new(params["sSearch_#{i}"]) if params["sSearch_#{i}"].present?
+
+          field_name = fields[i.to_i]
+          field = klass.fields[field_name]
+          field_type = field.respond_to?(:type) ? field.type : String
+
+          query = params["sSearch_#{i}"]
+
+          h[field_name] = (if [ Array, String, Symbol ].include?(field_type)
+              begin
+                Regexp.new(query)
+              rescue RegexpError
+                Regexp.new(Regexp.escape(query))
+              end
+            else
+              query
+            end) if query.present?
           h
         end
       end
@@ -92,7 +108,7 @@ module Mongoid
 
       def default_data_table_block
         lambda do |object|
-          Hash[fields.map { |c| [ fields.index(c), object.send(c) ] }].merge(:DT_RowId => object._id)
+          Hash[aliases.map { |c| [ aliases.index(c), object.send(c) ] }].merge(:DT_RowId => object._id)
         end
       end
 
