@@ -40,7 +40,7 @@ module Mongoid
       end
 
       def conditions
-        criteria.order_by(order_by_conditions).where(filter_conditions).where(filter_field_conditions)
+        criteria.clone.order_by(order_by_conditions).where(filter_conditions).where(filter_field_conditions)
       end
 
       def to_hash(&inline_block)
@@ -67,7 +67,7 @@ module Mongoid
       protected
 
       def order_by_conditions
-        order_params = params.select { |k,v| k =~ /(i|s)Sort(Col|Dir)_\d+/ }
+        order_params = params.dup.select { |k,v| k =~ /(i|s)Sort(Col|Dir)_\d+/ }
         return options[:order_by] || [] if order_params.blank?
         order_params.select { |k,v| k =~ /iSortCol_\d+/ }.sort_by(&:first).map do |col,field|
           i = /iSortCol_(\d+)/.match(col)[1]
@@ -78,28 +78,27 @@ module Mongoid
       def filter_conditions
         return unless (query = params[:sSearch]).present?
 
-        {"$or" => klass.data_table_searchable_fields.map { |field| { field => /#{query}/i} } }
+        b_regex = Boolean.set(params["bRegex"])
+
+        {
+          "$or" => klass.data_table_searchable_fields.map { |field|
+            { field => (b_regex === true) ? data_table_regex(query) : query }
+          }
+        }
       end
 
       def filter_field_conditions
-        order_params = params.select { |k,v| k =~ /sSearch_\d+/ }.inject({}) do |h,(k,v)|
+        params.dup.select { |k,v| k =~ /sSearch_\d+/ }.inject({}) do |h,(k,v)|
           i = /sSearch_(\d+)/.match(k)[1]
 
           field_name = fields[i.to_i]
-          field = klass.fields[field_name]
-          field_type = field.respond_to?(:type) ? field.type : String
+          #field = klass.fields.dup[field_name]
+          #field_type = field.respond_to?(:type) ? field.type : Object
 
           query = params["sSearch_#{i}"]
+          b_regex = Boolean.set(params["bRegex_#{i}"])
 
-          h[field_name] = (if [ Array, String, Symbol ].include?(field_type)
-              begin
-                Regexp.new(query)
-              rescue RegexpError
-                Regexp.new(Regexp.escape(query))
-              end
-            else
-              query
-            end) if query.present?
+          h[field_name] = (b_regex === true) ? data_table_regex(query) : query if query.present?
           h
         end
       end
@@ -124,6 +123,12 @@ module Mongoid
           end
           result
         end
+      end
+
+      def data_table_regex(query)
+        Regexp.new(query, Regexp::IGNORECASE)
+      rescue RegexpError
+        Regexp.new(Regexp.escape(query), Regexp::IGNORECASE)
       end
 
       def method_missing(method, *args, &block) #:nodoc:
