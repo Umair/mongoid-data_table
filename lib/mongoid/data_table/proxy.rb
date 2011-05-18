@@ -4,14 +4,14 @@ module Mongoid
 
       attr_reader :klass, :controller, :options, :extension, :params, :criteria, :unscoped, :fields, :aliases
 
-      def initialize(klass, controller, options = {}, block = nil)
+      def initialize(klass, controller, options = {}, &block)
         @klass      = klass
         @controller = controller
         @options    = klass.data_table_options.merge(options)
         @extension  = block
 
         @params   = options[:params]   || controller.params.dup
-        @criteria = options[:criteria] || klass.scoped
+        @criteria = options[:criteria] || klass.criteria
         @unscoped = options[:unscoped] || klass.unscoped
         @fields   = options[:fields]   || klass.data_table_fields
         @aliases  = options[:aliases]  || @fields
@@ -40,7 +40,7 @@ module Mongoid
       end
 
       def conditions
-        criteria.clone.order_by(order_by_conditions).where(filter_conditions).where(filter_field_conditions)
+        criteria.order_by(order_by_conditions).where(filter_conditions).where(filter_field_conditions)
       end
 
       def to_hash(&inline_block)
@@ -50,7 +50,7 @@ module Mongoid
           :iTotalRecords => unscoped.count,
           :iTotalDisplayRecords => conditions.count,
           :aaData => collection.map do |object|
-            data = controller.instance_eval { inline_block[object] }
+            data = controller.instance_eval { inline_block.call(object) }
             data.inject(data.is_a?(Hash) ? {} : []) do |result, item|
               Rails.logger.silence do
                 controller.instance_eval(&render_data_table_block(klass, item, object, result))
