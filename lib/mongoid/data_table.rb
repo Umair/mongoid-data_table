@@ -6,8 +6,10 @@ require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_support/concern'
 
+require 'mongoid/criteria'
 require 'mongoid/relations/proxy'
 
+require 'mongoid/data_table/criteria'
 require 'mongoid/data_table/proxy'
 require 'mongoid/data_table/version'
 
@@ -33,6 +35,10 @@ module Mongoid
 
       def data_table_sortable_fields
         self.data_table_options[:sortable] ||= self.data_table_fields
+      end
+
+      def data_table_dataset
+        self.data_table_options[:dataset]
       end
 
       def to_data_table(controller, options = {}, &block)

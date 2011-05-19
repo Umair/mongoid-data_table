@@ -8,9 +8,9 @@ module Mongoid
         @klass      = klass
         @controller = controller
         @options    = klass.data_table_options.merge(options)
-        @extension  = block
+        @extension  = block || klass.data_table_dataset || default_data_table_dataset
 
-        @params   = options[:params]   || controller.params.dup
+        @params   = options[:params]   || (controller.params.dup rescue {})
         @criteria = options[:criteria] || klass.criteria
         @unscoped = options[:unscoped] || klass.unscoped
         @fields   = options[:fields]   || klass.data_table_fields
@@ -44,7 +44,7 @@ module Mongoid
       end
 
       def to_hash(&inline_block)
-        inline_block = extension || default_data_table_block unless block_given?
+        inline_block = extension unless block_given?
         {
           :sEcho => params[:sEcho].to_i,
           :iTotalRecords => unscoped.count,
@@ -60,8 +60,12 @@ module Mongoid
         }
       end
 
-      def to_json(*args)
-        to_hash.to_json
+      def as_json(options = nil, &inline_block)
+        to_hash(&inline_block).to_json(options)
+      end
+
+      def to_json(*args, &inline_block)
+        as_json(*args, &inline_block)
       end
 
       protected
@@ -105,7 +109,7 @@ module Mongoid
 
       private
 
-      def default_data_table_block
+      def default_data_table_dataset
         lambda do |object|
           Hash[aliases.map { |c| [ aliases.index(c), object.send(c) ] }].merge(:DT_RowId => object._id)
         end

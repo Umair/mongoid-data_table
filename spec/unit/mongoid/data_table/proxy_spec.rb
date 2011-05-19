@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Mongoid::DataTable::Proxy do
 
-  let(:controller) do
+  let!(:controller) do
     Class.new(ActionController::Base).new.tap do |c|
       c.stubs(:params).returns({})
     end
