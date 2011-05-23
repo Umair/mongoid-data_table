@@ -16,11 +16,11 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency "rails", "~>3.0.0"
-  s.add_dependency "will_paginate", "~>3.0.pre2"
+  s.add_dependency "rails", ">= 3.0.0"
+  s.add_dependency "kaminari", "~> 0.12.4"
 
-  s.add_development_dependency "bson_ext", "~>1.3.0"
-  s.add_development_dependency "mongoid", "~>2.0.1"
+  s.add_development_dependency "bson_ext", "~>1.3.1"
+  s.add_development_dependency "mongoid", "~>2.0.2"
   s.add_development_dependency "mocha", "~>0.9.12"
   s.add_development_dependency "rspec", "~>2.6.0"
   s.add_development_dependency "shoulda", "~>2.11.3"

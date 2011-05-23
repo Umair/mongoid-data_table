@@ -19,10 +19,7 @@ module Mongoid
 
       def collection(force = false)
         reload if force
-        @collection ||= conditions.paginate({
-          :page => current_page,
-          :per_page => per_page
-        })
+        @collection ||= conditions.page(current_page).per(per_page)
       end
 
       def reload

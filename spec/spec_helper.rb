@@ -12,6 +12,7 @@ require 'mongoid'
 require 'mongoid-data_table'
 require 'mocha'
 require 'rspec'
+require 'kaminari'
 
 LOGGER = ActiveSupport::BufferedLogger.new($stdout)
 
@@ -19,6 +20,12 @@ Mongoid.configure do |config|
   name = "mongoid_data_table_test"
   config.master = Mongo::Connection.new.db(name)
   config.logger = nil
+end
+
+if defined? ::Mongoid
+  require 'kaminari/models/mongoid_extension'
+  ::Mongoid::Document.send :include, Kaminari::MongoidExtension::Document
+  ::Mongoid::Criteria.send :include, Kaminari::MongoidExtension::Criteria
 end
 
 Dir[ File.join(MODELS, "*.rb") ].sort.each { |file| require File.basename(file) }
