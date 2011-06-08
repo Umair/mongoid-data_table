@@ -15,6 +15,8 @@ module Mongoid
         @unscoped = options[:unscoped] || klass.unscoped
         @fields   = options[:fields]   || klass.data_table_fields
         @aliases  = options[:aliases]  || @fields
+
+        params[:iDisplayLength] = conditions.count if params[:iDisplayLength] == -1
       end
 
       def collection(force = false)
@@ -33,7 +35,7 @@ module Mongoid
       end
 
       def per_page
-        (params[:iDisplayLength] || klass.per_page rescue 10).to_i
+        (params[:iDisplayLength] || options[:per_page] || klass.per_page rescue 10).to_i
       end
 
       def conditions
