@@ -16,7 +16,7 @@ module Mongoid
         @fields   = options[:fields]   || klass.data_table_fields
         @aliases  = options[:aliases]  || @fields
 
-        params[:iDisplayLength] = conditions.count if params[:iDisplayLength] == -1
+        params[:iDisplayLength] = conditions.count if (params[:iDisplayLength].to_i rescue 0) == -1
       end
 
       def collection(force = false)
