@@ -2,7 +2,7 @@ module Mongoid
   module DataTable
     class Proxy < ::Mongoid::Relations::Proxy
 
-      attr_reader :klass, :controller, :options, :extension, :params, :criteria, :unscoped, :fields, :aliases
+      attr_reader :klass, :controller, :options, :extension, :params, :criteria, :unscoped, :fields, :aliases, :locals
 
       def initialize(klass, controller, options = {}, &block)
         @klass      = klass
@@ -15,6 +15,8 @@ module Mongoid
         @unscoped = options[:unscoped] || klass.unscoped
         @fields   = options[:fields]   || klass.data_table_fields
         @aliases  = options[:aliases]  || @fields
+
+        @locals = options[:locals] || {}
 
         params[:iDisplayLength] = conditions.count if (params[:iDisplayLength].to_i rescue 0) == -1
       end
@@ -122,7 +124,7 @@ module Mongoid
               self.instance_eval(&data_table.send(:render_data_table_block, klass, value, object, ''))
             end))
           else
-            result << render_to_string(:inline => item.to_s, :locals => { :"#{klass.name.underscore}" => object, :object => object })
+            result << render_to_string(:inline => item.to_s, :locals => data_table.locals.reverse_merge(:"#{klass.name.underscore}" => object, :object => object))
           end
           result
         end
