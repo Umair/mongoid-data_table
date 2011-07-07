@@ -124,7 +124,7 @@ module Mongoid
               self.instance_eval(&data_table.send(:render_data_table_block, klass, value, object, ''))
             end))
           else
-            result << render_to_string(:inline => item.to_s, :locals => data_table.locals.reverse_merge(:"#{klass.name.parameterize('_')}" => object, :object => object))
+            result << render_to_string(:inline => item.to_s, :locals => data_table.locals.reverse_merge(:"#{klass.name.underscore.parameterize('_')}" => object, :object => object))
           end
           result
         end

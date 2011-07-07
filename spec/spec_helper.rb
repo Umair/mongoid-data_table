@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
-MODELS = File.join(File.dirname(__FILE__), "models")
+MODELS  = File.join(File.dirname(__FILE__), "models")
 SUPPORT = File.join(File.dirname(__FILE__), "support")
 $LOAD_PATH.unshift(MODELS)
 $LOAD_PATH.unshift(SUPPORT)
@@ -28,8 +28,8 @@ if defined? ::Mongoid
   ::Mongoid::Criteria.send :include, Kaminari::MongoidExtension::Criteria
 end
 
-Dir[ File.join(MODELS, "*.rb") ].sort.each { |file| require File.basename(file) }
-Dir[ File.join(SUPPORT, "*.rb") ].each { |file| require File.basename(file) }
+Dir[ File.join(MODELS,  "**/*.rb") ].sort.each { |file| require file }
+Dir[ File.join(SUPPORT, "**/*.rb") ].each { |file| require file }
 
 RSpec.configure do |config|
   config.mock_with(:mocha)

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongoid-data_table (1.0.8)
+    mongoid-data_table (1.1.0)
       kaminari (~> 0.12.4)
       rails (>= 3.0.0)
 
