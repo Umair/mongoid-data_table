@@ -8,7 +8,7 @@ module Mongoid
         @klass      = klass
         @controller = controller
         @options    = klass.data_table_options.merge(options)
-        @extension  = block || klass.data_table_dataset || default_data_table_dataset
+        @extension  = block || options[:dataset] || klass.data_table_dataset || default_data_table_dataset
 
         @params   = options[:params]   || (controller.params.dup rescue {})
         @criteria = options[:criteria] || klass.criteria
