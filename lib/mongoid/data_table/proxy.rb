@@ -83,7 +83,7 @@ module Mongoid
       def filter_conditions
         return unless (query = params[:sSearch]).present?
 
-        b_regex = Boolean.set(params["bRegex"])
+        b_regex = Mongoid::Serialization.mongoize(params["bRegex"], Boolean)
 
         {
           "$or" => klass.data_table_searchable_fields.map { |field|
@@ -101,7 +101,7 @@ module Mongoid
           #field_type = field.respond_to?(:type) ? field.type : Object
 
           query = params["sSearch_#{i}"]
-          b_regex = Boolean.set(params["bRegex_#{i}"])
+          b_regex = Mongoid::Serialization.mongoize(params["bRegex_#{i}"], Boolean)
 
           h[field_name] = (b_regex === true) ? data_table_regex(query) : query if query.present?
           h
