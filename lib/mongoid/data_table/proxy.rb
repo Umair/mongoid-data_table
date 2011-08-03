@@ -1,12 +1,27 @@
+require 'json'
+require 'uri'
+
 module Mongoid
   module DataTable
     class Proxy < ::Mongoid::Relations::Proxy
 
-      attr_reader :klass, :controller, :options, :extension, :params, :criteria, :unscoped, :fields, :aliases, :locals
+      attr_reader :klass,
+        :controller,
+        :cookies,
+        :cookie,
+        :options,
+        :extension,
+        :params,
+        :criteria,
+        :unscoped,
+        :fields,
+        :aliases,
+        :locals
 
       def initialize(klass, controller, options = {}, &block)
         @klass      = klass
         @controller = controller
+        @cookies    = @controller.send(:cookies)
         @options    = klass.data_table_options.merge(options)
         @extension  = block || options[:dataset] || klass.data_table_dataset || default_data_table_dataset
 
@@ -19,6 +34,9 @@ module Mongoid
         @locals = options[:locals] || {}
 
         params[:iDisplayLength] = conditions.count if (params[:iDisplayLength].to_i rescue 0) == -1
+
+        @cookie = @cookies["SpryMedia_DataTables_#{options[:sInstance]}"]
+        @cookie = ::JSON.load(@cookie) if @cookie.is_a?(String)
       end
 
       def collection(force = false)
@@ -28,6 +46,49 @@ module Mongoid
 
       def reload
         (@collection = nil).nil?
+      end
+
+      def load_cookie!
+        if cookie.present?
+
+          state_params = HashWithIndifferentAccess.new.tap do |h|
+
+            h[:iDisplayStart]  = cookie['iStart']
+            h[:iDisplayLength] = cookie['iLength']
+            h[:sSearch]        = cookie['sFilter']
+
+            h[:iSortCol_0], h[:sSortDir_0] = (cookie['aaSorting'].first rescue [ nil, nil ])
+
+            begin
+              cookie['aaSearchCols'].each_with_index do |(value,regex),index|
+                h[:"bRegex_#{index}"]  = !regex
+                h[:"sSearch_#{index}"] = value
+              end
+            rescue
+              # do nothing
+            end
+
+          end
+
+          params.merge!(state_params)
+
+          @collection = nil
+
+        end
+        return self
+      end
+
+      def search_fields
+        return [] if cookie.blank?
+        hash = []
+        begin
+          cookie['aaSearchCols'].each_with_index do |(value,regex),index|
+            hash.push(value)
+          end
+        rescue
+          # do nothing
+        end
+        return hash
       end
 
       ## pagination options ##
