@@ -9,6 +9,7 @@ module Mongoid
         :controller,
         :cookies,
         :cookie,
+        :cookie_prefix,
         :options,
         :extension,
         :params,
@@ -35,8 +36,14 @@ module Mongoid
 
         params[:iDisplayLength] = conditions.count if (params[:iDisplayLength].to_i rescue 0) == -1
 
-        @cookie = @cookies["SpryMedia_DataTables_#{options[:sInstance]}"]
-        @cookie = ::JSON.load(@cookie) if @cookie.is_a?(String)
+        @cookie_prefix = options[:cookie_prefix] || 'SpryMedia_DataTables_'
+        @cookie = @cookies["#{cookie_prefix}#{options[:sInstance]}"]
+        begin
+          @cookie = ::JSON.load(cookie) if @cookie.is_a?(String)
+        rescue
+          @cookie = nil
+          @cookies.delete "#{cookie_prefix}#{options[:sInstance]}"
+        end
       end
 
       def collection(force = false)
