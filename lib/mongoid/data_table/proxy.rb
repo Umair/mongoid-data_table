@@ -5,6 +5,8 @@ module Mongoid
   module DataTable
     class Proxy < ::Mongoid::Relations::Proxy
 
+      undef_method(:respond_to?) # Since mongoid 2.1.5, this messes up "render @objects.to_data_table(controller)"
+
       attr_reader :klass,
         :controller,
         :cookies,
@@ -39,7 +41,7 @@ module Mongoid
         @cookie_prefix = options[:cookie_prefix] || 'SpryMedia_DataTables_'
         @cookie = @cookies["#{cookie_prefix}#{options[:sInstance]}"]
         begin
-          @cookie = ::JSON.load(cookie) if @cookie.is_a?(String)
+          @cookie = ::JSON.load(cookie) if cookie.is_a?(String)
         rescue
           @cookie = nil
           @cookies.delete "#{cookie_prefix}#{options[:sInstance]}"
