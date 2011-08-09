@@ -39,13 +39,6 @@ module Mongoid
         params[:iDisplayLength] = conditions.count if (params[:iDisplayLength].to_i rescue 0) == -1
 
         @cookie_prefix = options[:cookie_prefix] || 'SpryMedia_DataTables_'
-        @cookie = @cookies["#{cookie_prefix}#{options[:sInstance]}"]
-        begin
-          @cookie = ::JSON.load(cookie) if cookie.is_a?(String)
-        rescue
-          @cookie = nil
-          @cookies.delete "#{cookie_prefix}#{options[:sInstance]}"
-        end
       end
 
       def collection(force = false)
@@ -57,7 +50,16 @@ module Mongoid
         (@collection = nil).nil?
       end
 
-      def load_cookie!
+      def load_cookie!(sInstance = nil)
+        sInstance ||= options[:sInstance]
+        @cookie = @cookies[cookie_name(sInstance)]
+        begin
+          @cookie = ::JSON.load(cookie) if cookie.is_a?(String)
+        rescue
+          @cookie = nil
+          @cookies.delete cookie_name(sInstance)
+          return self
+        end
         if cookie.present?
 
           state_params = HashWithIndifferentAccess.new.tap do |h|
@@ -180,6 +182,10 @@ module Mongoid
 
       private
 
+      def cookie_name(sInstance)
+        "#{cookie_prefix}#{sInstance}"
+      end
+
       def default_data_table_dataset
         lambda do |object|
           Hash[aliases.map { |c| [ aliases.index(c), object.send(c) ] }].merge(:DT_RowId => object._id)
@@ -209,7 +215,7 @@ module Mongoid
       def method_missing(method, *args, &block) #:nodoc:
         collection.send(method, *args, &block)
       end
-
+1
     end
   end
 end
