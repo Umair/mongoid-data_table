@@ -1,9 +1,7 @@
-require 'active_support/core_ext/object/blank'
-require 'active_support/core_ext/object/to_json'
-require 'active_support/json/encoding'
-require 'active_support/core_ext/string/output_safety'
-require 'active_support/core_ext/string/inflections'
-require 'active_support/core_ext/class/inheritable_attributes'
+require 'active_support/core_ext/object'
+require 'active_support/json'
+require 'active_support/core_ext/string'
+require 'active_support/core_ext/class'
 require 'active_support/concern'
 
 require 'mongoid/relations/proxy'
