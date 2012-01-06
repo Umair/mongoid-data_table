@@ -138,6 +138,7 @@ DEPENDENCIES
   mocha (~> 0.10.0)
   mongoid (~> 2.1)
   mongoid-data_table!
+  rake
   rb-fsevent
   rspec (~> 2.8)
   spork (~> 0.9.0.rc)

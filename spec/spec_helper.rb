@@ -20,9 +20,12 @@ Spork.prefork do
 
   LOGGER = ActiveSupport::BufferedLogger.new($stdout)
 
+  def database_id
+    ENV["CI"] ? "mongoid_data_table_#{Process.pid}" : "mongoid_data_table_test"
+  end
+
   Mongoid.configure do |config|
-    name = "mongoid_data_table_test"
-    config.master = Mongo::Connection.new.db(name)
+    config.master = Mongo::Connection.new.db(database_id)
     config.logger = nil
   end
 
