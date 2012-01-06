@@ -64,6 +64,7 @@ describe Mongoid::DataTable do
 
       let(:controller) do
         Class.new(ActionController::Base).new.tap do |c|
+          c.stubs(:cookies).returns({})
           c.stubs(:params).returns({})
         end
       end

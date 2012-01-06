@@ -1,5 +1,9 @@
 # Mongoid: Data Table
 
+[![Build Status](https://secure.travis-ci.org/potatosalad/mongoid-data_table.png)](http://travis-ci.org/potatosalad/mongoid-data_table)
+
+[![Dependency Status](https://gemnasium.com/potatosalad/mongoid-data_table.png?travis)](https://gemnasium.com/potatosalad/mongoid-data_table)
+
 Makes it easy to ship data to a jQuery DataTable from Mongoid.
 
 ## Quick example:

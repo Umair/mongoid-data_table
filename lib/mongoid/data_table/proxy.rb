@@ -125,7 +125,7 @@ module Mongoid
           :aaData => collection.map do |object|
             data = controller.instance_eval { inline_block.call(object) }
             data.inject(data.is_a?(Hash) ? {} : []) do |result, item|
-              Rails.logger.silence do
+              Rails.logger.silence_warnings do
                 controller.instance_eval(&render_data_table_block(klass, item, object, result))
               end
             end
