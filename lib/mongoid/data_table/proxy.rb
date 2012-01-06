@@ -71,7 +71,7 @@ module Mongoid
             h[:iSortCol_0], h[:sSortDir_0] = (cookie['aaSorting'].first rescue [ nil, nil ])
 
             begin
-              cookie['aaSearchCols'].each_with_index do |(value,regex),index|
+              (cookie['aaSearchCols'] || cookie['aoSearchCols']).each_with_index do |(value,regex),index|
                 h[:"bRegex_#{index}"]  = !regex
                 h[:"sSearch_#{index}"] = value
               end
@@ -93,7 +93,7 @@ module Mongoid
         return [] if cookie.blank?
         array = []
         begin
-          cookie['aaSearchCols'].each_with_index do |(value,regex),index|
+          (cookie['aaSearchCols'] || cookie['aoSearchCols']).each_with_index do |(value,regex),index|
             array.push(URI.decode(value.to_s))
           end
         rescue
