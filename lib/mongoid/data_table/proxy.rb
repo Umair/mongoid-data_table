@@ -91,15 +91,15 @@ module Mongoid
 
       def search_fields
         return [] if cookie.blank?
-        hash = []
+        array = []
         begin
           cookie['aaSearchCols'].each_with_index do |(value,regex),index|
-            hash.push(value)
+            array.push(URI.decode(value.to_s))
           end
         rescue
           # do nothing
         end
-        return hash
+        return array
       end
 
       ## pagination options ##
