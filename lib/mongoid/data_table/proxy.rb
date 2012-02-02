@@ -44,7 +44,7 @@ module Mongoid
 
       def collection(force = false)
         reload if force
-        @collection ||= conditions.page(current_page).per(per_page)
+        @collection ||= conditions
       end
 
       def reload
@@ -160,7 +160,7 @@ module Mongoid
       end
 
       def conditions
-        criteria.order_by(order_by_conditions).where(filter_conditions).where(filter_field_conditions)
+        criteria.order_by(order_by_conditions).where(filter_conditions).where(filter_field_conditions).limit(per_page.to_i*current_page)
       end
 
       def to_hash(&inline_block)
